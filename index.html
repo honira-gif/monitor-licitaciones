@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Licitaciones Desiertas — Perú OECE</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f2eb;--bg2:#edeae0;--bg3:#e4e0d4;
+  --ink:#1a1814;--ink2:#6b6456;--ink3:#a09888;
+  --red:#c84b1f;--gold:#b8860b;--golds:#fff3d4;--goldt:#7a5500;
+  --border:rgba(26,24,20,0.10);--border2:rgba(26,24,20,0.18);
+  --display:'Syne',sans-serif;--body:'Instrument Sans',sans-serif;--r:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh}
+header{background:var(--ink);padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
+.hlogo{width:32px;height:32px;border-radius:6px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hlogo svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.htitle{font-family:var(--display);font-size:13px;font-weight:700;color:#fff;line-height:1.15}
+.htitle span{color:#f0a050}
+.hsub{font-size:10px;color:rgba(255,255,255,0.4);font-weight:300;margin-top:1px}
+.hbadge{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--display);font-weight:600;padding:3px 9px;border-radius:99px;flex-shrink:0;background:rgba(63,185,80,0.15);border:1px solid rgba(63,185,80,0.3);color:#4caf7d}
+.hdot{width:6px;height:6px;border-radius:50%;background:#4caf7d;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:0.4}}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+
+.fcard{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.flabel{font-family:var(--display);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(min-width:560px){.fgrid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px}
+.fg select,.fg input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--ink);font-family:var(--body);font-size:13px;padding:8px 10px;outline:none;-webkit-appearance:none;appearance:none}
+.fg select:focus,.fg input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,75,31,0.12)}
+.fg input::placeholder{color:var(--ink3)}
+
+.btnprincipal{width:100%;background:var(--red);color:#fff;border:none;border-radius:7px;font-family:var(--display);font-size:13px;font-weight:700;padding:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;margin-bottom:10px}
+.btnprincipal:hover{background:#b03e15}
+.btnprincipal:disabled{opacity:0.4;cursor:not-allowed}
+
+.pasos-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid var(--border)}
+.paso-box{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:10px}
+.paso-titulo{font-size:10px;font-family:var(--display);font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.paso-hint{font-size:10px;color:var(--ink3);margin-top:5px;text-align:center;line-height:1.4}
+.btn-paso{width:100%;border:none;border-radius:5px;padding:9px 8px;font-family:var(--display);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-paso.dark{background:var(--ink);color:#fff}
+.btn-paso.rojo{background:var(--red);color:#fff}
+
+.pwrap{margin-bottom:14px}
+.plabels{font-size:12px;color:var(--ink2);margin-bottom:5px;display:flex;justify-content:space-between}
+.pbar{height:8px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.pfill{height:100%;background:var(--red);border-radius:99px;width:0%;transition:width 0.4s ease}
+
+.status{border-radius:7px;padding:10px 14px;font-size:13px;display:flex;align-items:flex-start;gap:9px;margin-bottom:14px;line-height:1.5}
+.status.loading{background:#ddeeff;color:#1a5a9a;border:1px solid #aaccee}
+.status.error{background:#fde8e4;color:#9a2a1a;border:1px solid #f0bbb0}
+.status.warning{background:#fff3d4;color:#7a5500;border:1px solid #f0d080}
+.spinner{width:15px;height:15px;flex-shrink:0;margin-top:2px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.mc .ml{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px}
+.mc .mv{font-family:var(--display);font-size:22px;font-weight:800;color:var(--red);line-height:1;margin-bottom:2px}
+.mc .ms{font-size:10px;color:var(--ink3)}
+
+.tabs{display:flex;border-bottom:1px solid var(--border2);margin-bottom:14px}
+.tab{background:none;border:none;border-bottom:2px solid transparent;font-family:var(--body);font-size:13px;font-weight:500;color:var(--ink2);padding:9px 16px;cursor:pointer;margin-bottom:-1px;transition:color 0.15s}
+.tab.on{color:var(--red);border-bottom-color:var(--red)}
+.tab:hover:not(.on){color:var(--ink)}
+.sec{display:none}.sec.on{display:block}
+
+.tbox{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+thead th{background:var(--bg3);padding:9px 11px;text-align:left;font-family:var(--display);font-size:9px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border2);white-space:nowrap}
+tbody td{padding:10px 11px;border-bottom:1px solid var(--border);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3)}
+
+/* Columna objeto */
+.obj-principal{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;max-width:300px}
+.obj-codigo{font-size:10px;color:var(--ink3);font-family:monospace;margin-top:3px}
+.obj-entidad{font-size:11px;color:var(--ink2);margin-top:2px;max-width:300px;line-height:1.3}
+
+/* Badges de categoría */
+.cat-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;font-family:var(--display);white-space:nowrap}
+.cat-s{background:#e8f4fd;color:#1565c0}
+.cat-g{background:#e8f5e9;color:#2e7d32}
+.cat-w{background:#fff3e0;color:#e65100}
+
+/* Badge estado */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:0.5px;white-space:nowrap}
+.bd{background:var(--golds);color:var(--goldt);border:1px solid #f0d080}
+.bc{background:#fde8e4;color:#9a2a1a;border:1px solid #f0bbb0}
+.bz{font-family:var(--display);font-size:11px;font-weight:800;color:var(--red)}
+
+.cm{font-size:12px;font-weight:700;white-space:nowrap;color:var(--ink)}
+.lnk{background:none;border:none;color:#1a5a9a;font-size:11px;cursor:pointer;padding:2px 0;display:inline-flex;align-items:center;gap:3px;font-family:var(--body)}
+.lnk:hover{text-decoration:underline}
+
+.pag{display:flex;align-items:center;gap:8px;padding:11px 14px;border-top:1px solid var(--border);font-size:12px;color:var(--ink2)}
+.pb{background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--ink);font-family:var(--body)}
+.pb:hover{border-color:var(--red);color:var(--red)}
+.pb:disabled{opacity:0.3;cursor:not-allowed}
+
+.drow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.drow:last-child{border-bottom:none}
+.dn{width:180px;color:var(--ink2);flex-shrink:0;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dbw{flex:1;background:var(--bg3);border-radius:99px;height:6px;overflow:hidden}
+.dbf{height:100%;background:var(--red);border-radius:99px;transition:width 0.6s ease}
+.dc{width:44px;text-align:right;font-family:var(--display);font-size:11px;font-weight:700;color:var(--red)}
+.dm{width:82px;text-align:right;font-size:10px;color:var(--ink3)}
+
+.ecard{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.ecard h3{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:6px}
+.ecard p{font-size:13px;color:var(--ink2);margin-bottom:14px;line-height:1.6}
+.ebtn{background:var(--bg3);border:1px solid var(--border2);color:var(--ink);border-radius:7px;font-size:13px;font-weight:500;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-family:var(--body);transition:border-color 0.15s;margin-right:8px;margin-bottom:8px}
+.ebtn:hover{border-color:var(--red);color:var(--red)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{font-size:11px;font-family:var(--display);font-weight:600;padding:3px 10px;border-radius:99px;background:var(--golds);color:var(--goldt);border:1px solid #f0d080}
+
+.intro{text-align:center;padding:2.5rem 1rem;color:var(--ink3)}
+.intro .big{font-size:44px;margin-bottom:12px}
+.intro h3{font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink2);margin-bottom:8px}
+.intro p{font-size:13px;line-height:1.7;max-width:380px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ──────────────────────────────────────────── -->
+<div id="login-screen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);
+">
+  <div style="
+    background:var(--bg);border-radius:12px;
+    padding:40px 36px;width:100%;max-width:360px;
+    box-shadow:0 24px 80px rgba(0,0,0,0.5);
+    text-align:center;
+  ">
+    <!-- Logo -->
+    <div style="
+      width:52px;height:52px;border-radius:10px;background:var(--red);
+      display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+    ">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+
+    <div style="font-size:20px;font-weight:800;color:var(--ink);margin-bottom:4px">Monitor Licitaciones</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:28px">SEACE · OECE · Perú</div>
+
+    <!-- Form -->
+    <div style="margin-bottom:14px;text-align:left">
+      <label style="font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px">Contraseña</label>
+      <input
+        type="password"
+        id="login-pwd"
+        placeholder="Ingresa la contraseña"
+        onkeydown="if(event.key==='Enter')verificarLogin()"
+        style="
+          width:100%;padding:11px 14px;font-size:14px;
+          border:1.5px solid var(--border2);border-radius:7px;
+          background:var(--bg2);color:var(--ink);
+          font-family:var(--body);outline:none;
+        "
+        onfocus="this.style.borderColor='var(--red)'"
+        onblur="this.style.borderColor='var(--border2)'"
+      >
+    </div>
+
+    <div id="login-error" style="
+      font-size:12px;color:#c84b1f;margin-bottom:12px;
+      min-height:18px;font-weight:500;
+    "></div>
+
+    <button onclick="verificarLogin()" style="
+      width:100%;background:var(--red);color:#fff;border:none;
+      border-radius:7px;padding:12px;font-family:var(--display);
+      font-size:14px;font-weight:700;cursor:pointer;
+      transition:background 0.15s;letter-spacing:0.3px;
+    " onmouseover="this.style.background='#b03e15'" onmouseout="this.style.background='var(--red)'">
+      Ingresar
+    </button>
+
+    <div style="font-size:11px;color:var(--ink3);margin-top:20px">hgmi.org · Uso interno</div>
+  </div>
+</div>
+
+<header>
+  <div class="hlogo">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  </div>
+  <div>
+    <div class="htitle">Monitor <span>Licitaciones Desiertas</span></div>
+    <div class="hsub">Fuente oficial: contratacionesabiertas.oece.gob.pe · SEACE V3.0</div>
+  </div>
+  <div class="hbadge"><div class="hdot"></div>OECE OFICIAL</div>
+</header>
+
+<div class="wrap">
+
+  <div class="fcard">
+    <div class="flabel">// Período y filtros</div>
+    <div class="fgrid">
+      <div class="fg">
+        <label>Año</label>
+        <select id="f-año">
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+          <option value="2024" selected>2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
+          <option value="2017">2017</option>
+          <option value="2016">2016</option>
+          <option value="2015">2015</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Mes</label>
+        <select id="f-mes">
+          <option value="todos">Todos los meses</option>
+          <option value="01">Enero</option>
+          <option value="02">Febrero</option>
+          <option value="03">Marzo</option>
+          <option value="04">Abril</option>
+          <option value="05" selected>Mayo</option>
+          <option value="06">Junio</option>
+          <option value="07">Julio</option>
+          <option value="08">Agosto</option>
+          <option value="09">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Estado</label>
+        <select id="f-estado">
+          <option value="desierto">Desierto</option>
+          <option value="cancelado">Cancelado/Nulo</option>
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Palabra clave</label>
+        <input type="text" id="f-search" placeholder="usa el buscador de la tabla ↓" style="cursor:default;color:var(--ink3);opacity:0.6" onfocus="this.blur()">
+      </div>
+    </div>
+
+    <button class="btnprincipal" id="btn" onclick="buscar()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscar licitaciones desiertas
+    </button>
+
+    <div class="pasos-wrap">
+      <div class="paso-box">
+        <div class="paso-titulo">Paso 1 — Descargar ZIP</div>
+        <button class="btn-paso dark" onclick="descargarZIP()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar ZIP del OECE
+        </button>
+        <div class="paso-hint" id="zip-hint">Descarga el ZIP según el período seleccionado</div>
+      </div>
+      <div class="paso-box">
+        <div class="paso-titulo">Paso 2 — Subir y procesar</div>
+        <label class="btn-paso rojo" style="cursor:pointer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 18 12 13 17 18"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
+          Subir ZIPs y analizar
+          <input type="file" accept=".zip,.xlsx" multiple style="display:none" id="f-upload" onchange="procesarLocal(this)">
+        </label>
+        <div class="paso-hint">Sube el ZIP — se procesa en tu navegador</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pwrap" class="pwrap" style="display:none">
+    <div class="plabels"><span id="plabel">Iniciando…</span><span id="ppct">0%</span></div>
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+  </div>
+  <div id="sbox" style="display:none"></div>
+
+  <div id="chips-wrap" style="display:none">
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:6px;font-weight:600">DATOS CARGADOS:</div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="metrics" id="metrics" style="display:none">
+    <div class="mc"><div class="ml">Total procesados</div><div class="mv" id="m1">—</div><div class="ms">registros en el período</div></div>
+    <div class="mc"><div class="ml">Desiertos</div><div class="mv" id="m2" style="color:var(--gold)">—</div><div class="ms">mayor oportunidad</div></div>
+    <div class="mc"><div class="ml">Monto total</div><div class="mv" id="m3">—</div><div class="ms">referencial S/</div></div>
+    <div class="mc"><div class="ml">Sin postores</div><div class="mv" id="m4" style="color:var(--red)">—</div><div class="ms">nadie postuló</div></div>
+  </div>
+
+  <div id="tabsbar" style="display:none">
+    <div class="tabs">
+      <button class="tab on" onclick="stab('lista',this)">Lista</button>
+      <button class="tab" onclick="stab('tipo',this)">Por tipo</button>
+      <button class="tab" onclick="stab('exp',this)">Exportar</button>
+    </div>
+
+    <div id="sec-lista" class="sec on">
+      <div id="tabla-filtros" style="display:none;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 12px;margin-bottom:8px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+          <span style="font-family:var(--display);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap">Filtrar:</span>
+          <select id="f-tipo" onchange="aplicarFiltrosTabla()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none;cursor:pointer">
+            <option value="todos">🗂 Todos los tipos</option>
+            <option value="services">🔧 Servicio</option>
+            <option value="goods">📦 Bien</option>
+            <option value="works">🏗️ Obra</option>
+          </select>
+          <select id="f-metodo" onchange="aplicarFiltrosTabla()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none;cursor:pointer">
+            <option value="todos">📋 Todos los procedimientos</option>
+          </select>
+          <select id="f-postores" onchange="aplicarFiltrosTabla()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none;cursor:pointer">
+            <option value="todos">👥 Todos los postores</option>
+            <option value="0">0 postores (nadie postuló)</option>
+            <option value="1-3">1 a 3 postores</option>
+            <option value="4-10">4 a 10 postores</option>
+            <option value="10+">Más de 10 postores</option>
+          </select>
+          <select id="f-reintentos" onchange="aplicarFiltrosTabla()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none;cursor:pointer">
+            <option value="1">🔁 Todos los reintentos</option>
+            <option value="2">🔁 2+ reintentos</option>
+            <option value="3">🔁 3+ reintentos</option>
+            <option value="4">🔁 4+ reintentos</option>
+          </select>
+          <select id="f-orden" onchange="aplicarFiltrosTabla()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none;cursor:pointer">
+            <option value="reintentos">↕ Más reintentos</option>
+            <option value="monto">↕ Mayor monto</option>
+            <option value="fecha">↕ Más reciente</option>
+          </select>
+          <button onclick="exportarSeleccionados()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border2);border-radius:5px;background:var(--bg3);color:var(--ink);font-family:var(--display);font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px" title="Exportar filas seleccionadas a Excel">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar seleccionados
+          </button>
+          <input type="text" id="f-search-tabla" placeholder="🔍 Buscar en objeto, entidad…" onkeyup="aplicarFiltrosTabla()" style="flex:1;min-width:160px;font-size:12px;padding:5px 10px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none">
+          <span id="filtro-count" style="font-size:11px;color:var(--ink3);font-family:var(--display);font-weight:600;white-space:nowrap"></span>
+        </div>
+      </div>
+      <div class="tbox">
+        <div class="tscroll" id="twrap"></div>
+        <div class="pag" id="pag" style="display:none">
+          <button class="pb" id="pprev" onclick="cpag(-1)">&#8592;</button>
+          <span id="pinfo" style="font-size:12px"></span>
+          <button class="pb" id="pnext" onclick="cpag(1)">&#8594;</button>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--ink3)" id="ptot"></span>
+            <select id="f-perpage" onchange="cambiarPerPage()" style="font-size:11px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--ink);font-family:var(--body);outline:none">
+              <option value="20">20 / pág</option>
+              <option value="50">50 / pág</option>
+              <option value="100">100 / pág</option>
+              <option value="200">200 / pág</option>
+            </select>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-tipo" class="sec">
+      <div class="tbox">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
+          <span style="font-family:var(--display);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px">Por tipo de procedimiento</span>
+        </div>
+        <div style="padding:8px 16px 14px" id="tipowrap"></div>
+      </div>
+    </div>
+
+    <div id="sec-exp" class="sec">
+      <div class="ecard">
+        <h3>Descargar CSV</h3>
+        <p>Exporta todos los resultados filtrados para abrirlos en Excel o Google Sheets. Incluye el objeto de contratación, entidad, monto y enlace al SEACE.</p>
+        <button class="ebtn" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar CSV
+        </button>
+      </div>
+      <div class="ecard">
+        <h3>Portal oficial OECE</h3>
+        <p>Descarga los archivos ZIP históricos por año y mes desde el portal oficial.</p>
+        <a class="ebtn" href="https://contratacionesabiertas.oece.gob.pe/descargas" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Ir al portal OECE ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="intro" class="intro">
+    <div class="big">🏛️</div>
+    <h3>Licitaciones desiertas del SEACE</h3>
+    <p>Usa el botón Buscar o descarga el ZIP manualmente con los pasos de abajo para explorar oportunidades de negocio.</p>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ── LOGIN ─────────────────────────────────────────────────────
+// Cambia esta contraseña por la que quieras usar
+const CLAVE_ACCESO = 'hgmi2026';
+
+function verificarLogin() {
+  const input = document.getElementById('login-pwd');
+  const error = document.getElementById('login-error');
+  const pwd = input.value.trim();
+
+  if (!pwd) {
+    error.textContent = 'Ingresa la contraseña.';
+    input.focus();
+    return;
+  }
+
+  // Hash simple para no exponer la clave en texto plano
+  if (hashSimple(pwd) === hashSimple(CLAVE_ACCESO)) {
+    // Guardar sesión en sessionStorage (se borra al cerrar el tab)
+    sessionStorage.setItem('monitor_auth', hashSimple(CLAVE_ACCESO));
+    document.getElementById('login-screen').style.display = 'none';
+    error.textContent = '';
+    input.value = '';
+  } else {
+    error.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
+    input.value = '';
+    input.focus();
+    // Shake animation
+    const box = input.closest('div[style*="background:var(--bg)"]') || input.parentElement;
+    input.style.borderColor = '#c84b1f';
+    setTimeout(() => input.style.borderColor = 'var(--border2)', 1500);
+  }
+}
+
+function hashSimple(str) {
+  // Hash básico para ofuscar la clave en sessionStorage
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return h.toString(36);
+}
+
+// Verificar sesión al cargar (si ya estaba autenticado en este tab)
+window.addEventListener('DOMContentLoaded', () => {
+  const stored = sessionStorage.getItem('monitor_auth');
+  if (stored && stored === hashSimple(CLAVE_ACCESO)) {
+    document.getElementById('login-screen').style.display = 'none';
+  } else {
+    // Asegurar que el login esté visible y enfocar el input
+    document.getElementById('login-screen').style.display = 'flex';
+    setTimeout(() => document.getElementById('login-pwd')?.focus(), 100);
+  }
+});
+
+// ── APP ────────────────────────────────────────────────────────
+const BASE = 'https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/xlsx';
+let allData = [], totalProcesados = 0, page = 1;
+let PER = 20;
+let etiquetas = [];
+
+// ── DESCARGA XHR ─────────────────────────────────────────────
+function xhrGet(url, onProg) {
+  return new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open('GET', url, true);
+    x.responseType = 'arraybuffer';
+    x.onprogress = e => { if (e.lengthComputable && onProg) onProg(e.loaded/e.total*100); };
+    x.onload = () => x.status===200 ? resolve(x.response) : x.status===404 ? resolve(null) : reject(new Error('HTTP '+x.status));
+    x.onerror = () => reject(new Error('Sin conexión'));
+    x.send();
+  });
+}
+
+// ── PROCESAR BUFFER (ZIP o XLSX) ──────────────────────────────
+async function procesarBuffer(buffer, estado, search) {
+  // Detectar ZIP por magic bytes
+  const magic = new Uint8Array(buffer.slice(0,4));
+  let xlsxBuf;
+  if (magic[0]===0x50 && magic[1]===0x4B) {
+    const zip = await JSZip.loadAsync(buffer);
+    const fname = Object.keys(zip.files).find(f => f.endsWith('.xlsx'));
+    if (!fname) throw new Error('No hay .xlsx en el ZIP');
+    xlsxBuf = await zip.files[fname].async('arraybuffer');
+  } else {
+    xlsxBuf = buffer;
+  }
+
+  const wb = XLSX.read(xlsxBuf, { type:'array', sheets:['records','com_ten_documents'] });
+  const records = XLSX.utils.sheet_to_json(wb.Sheets['records']||{}, { defval:'' });
+  const docs    = XLSX.utils.sheet_to_json(wb.Sheets['com_ten_documents']||{}, { defval:'' });
+
+  totalProcesados += records.length;
+
+  // Identificar desiertos por documento oficial
+  const desSet = new Set(), canSet = new Set();
+  docs.forEach(d => {
+    const t = String(d['compiledRelease/tender/documents/0/title']||'').toLowerCase();
+    const o = d['ocid']||'';
+    if (t.includes('desierto')) desSet.add(o);
+    if (t.includes('cancelad')||t.includes('nulo')||t.includes('anulad')) canSet.add(o);
+  });
+
+  let result = records
+    .filter(r => {
+      const o = r['ocid']||'';
+      if (estado==='desierto' && !desSet.has(o)) return false;
+      if (estado==='cancelado' && !canSet.has(o)) return false;
+      if (estado==='todos' && !desSet.has(o) && !canSet.has(o)) return false;
+      return true;
+    })
+    .map(r => {
+      const ocid = r['ocid']||'';
+      return {
+        ocid,
+        // Fecha convocatoria
+        fecha:    String(r['compiledRelease/tender/tenderPeriod/startDate']||'').substring(0,10),
+        // Descripción real del objeto (lo que pide el Estado)
+        objeto:   String(r['compiledRelease/tender/description']||'').trim(),
+        // Código correlativo del proceso
+        codigo:   String(r['compiledRelease/tender/title']||'').trim(),
+        // Entidad convocante
+        entidad:  String(r['compiledRelease/buyer/name']||'').trim(),
+        // Tipo: services, goods, works
+        categoria:String(r['compiledRelease/tender/mainProcurementCategory']||'').trim(),
+        // Tipo de procedimiento
+        metodo:   String(r['compiledRelease/tender/procurementMethodDetails']||r['compiledRelease/tender/procurementMethod']||'').trim(),
+        // Monto referencial en soles
+        monto:    parseFloat(String(r['compiledRelease/tender/value/amount_PEN']||'0').replace(/[^0-9.]/g,''))||0,
+        // Número de postores que participaron
+        postores: parseInt(String(r['compiledRelease/tender/numberOfTenderers']||'0'))||0,
+        // Estado
+        estado:   desSet.has(ocid) ? 'DESIERTO' : 'CANCELADO',
+        // Link al SEACE
+        url:      'https://contratacionesabiertas.osce.gob.pe/proceso/'+ocid,
+      };
+    });
+
+  if (search) {
+    const q = search.toLowerCase();
+    result = result.filter(r =>
+      r.objeto.toLowerCase().includes(q) ||
+      r.codigo.toLowerCase().includes(q) ||
+      r.entidad.toLowerCase().includes(q) ||
+      r.metodo.toLowerCase().includes(q)
+    );
+  }
+  return result;
+}
+
+// ── BUSCAR (automático) ───────────────────────────────────────
+async function buscar() {
+  const año=document.getElementById('f-año').value;
+  const mes=document.getElementById('f-mes').value;
+  const estado=document.getElementById('f-estado').value;
+  const search=document.getElementById('f-search').value.trim().toLowerCase();
+  const btn=document.getElementById('btn');
+
+  allData=[]; totalProcesados=0; page=1; etiquetas=[];
+  btn.disabled=true; resetUI();
+  setProgress(2,'Conectando con el OECE…');
+  setSt('Descargando datos del SEACE…','loading');
+
+  const meses=mes==='todos'?['01','02','03','04','05','06','07','08','09','10','11','12']:[mes];
+
+  for(let i=0;i<meses.length;i++){
+    const m=meses[i];
+    setSt(`Descargando ${nombreMes(m)} ${año}… (${i+1}/${meses.length})`,'loading');
+    setProgress((i/meses.length)*88+2,`Descargando ${nombreMes(m)} ${año}…`);
+    try{
+      const buf=await xhrGet(`${BASE}/${año}/${m}`, p=>setProgress((i/meses.length)*88+p*0.08+2,`${nombreMes(m)} ${año} — ${Math.round(p)}%`));
+      if(!buf) continue;
+      setProgress((i/meses.length)*88+8,`Procesando ${nombreMes(m)} ${año}…`);
+      const r=await procesarBuffer(buf,estado,search);
+      allData=allData.concat(r);
+      etiquetas.push(`${nombreMes(m)} ${año}`);
+    }catch(e){
+      if(i===0){
+        setSt(null); setProgress(0,'');
+        document.getElementById('pwrap').style.display='none';
+        setSt(`El OECE bloqueó la descarga automática. Usa los pasos manuales de abajo: descarga el ZIP y luego súbelo.`,'warning');
+        document.getElementById('intro').style.display='block';
+        btn.disabled=false; return;
+      }
+      continue;
+    }
+  }
+  terminar(); btn.disabled=false;
+}
+
+// ── SUBIR ARCHIVOS LOCALES (múltiples) ───────────────────────
+async function procesarLocal(input){
+  const files=[...input.files]; if(!files.length) return;
+  input.value='';
+  const estado=document.getElementById('f-estado').value;
+  const search=document.getElementById('f-search').value.trim().toLowerCase();
+  allData=[]; totalProcesados=0; page=1; etiquetas=[];
+  resetUI();
+  setSt(`Procesando ${files.length} archivo(s)…`,'loading');
+  setProgress(2,`Preparando ${files.length} archivo(s)…`);
+
+  for(let i=0;i<files.length;i++){
+    const file=files[i];
+    const pct=((i)/files.length)*95+2;
+    setProgress(pct,`Procesando ${file.name} (${i+1}/${files.length})…`);
+    setSt(`Procesando ${file.name} — ${i+1} de ${files.length}`,'loading');
+    try{
+      const buf=await file.arrayBuffer();
+      const r=await procesarBuffer(buf,estado,search);
+      allData=allData.concat(r);
+      etiquetas.push(file.name.replace(/\.(zip|xlsx)$/i,''));
+    }catch(e){
+      console.warn('Error en',file.name,e.message);
+      // continuar con los demás archivos
+    }
+  }
+
+  if(!allData.length && totalProcesados===0){
+    setSt('No se pudo procesar ningún archivo. Verifica que sean ZIPs del OECE.','error');
+    document.getElementById('intro').style.display='block';
+    return;
+  }
+  terminar();
+}
+
+// ── TERMINAR Y MOSTRAR ────────────────────────────────────────
+function terminar(){
+  // Deduplicar por ocid (puede haber repetidos al subir múltiples ZIPs con períodos solapados)
+  const vistos = new Set();
+  allData = allData.filter(r => {
+    if(vistos.has(r.ocid)) return false;
+    vistos.add(r.ocid);
+    return true;
+  });
+
+  // Contar repeticiones por código de proceso (mismo título = mismo proceso relicitado)
+  const cuentaCodigo = {};
+  allData.forEach(r => {
+    const base = r.codigo.replace(/-\d+$/, ''); // quitar sufijo -2, -3, etc
+    cuentaCodigo[base] = (cuentaCodigo[base] || 0) + 1;
+  });
+  allData.forEach(r => {
+    const base = r.codigo.replace(/-\d+$/, '');
+    r.repeticiones = cuentaCodigo[base];
+  });
+  // Ordenar base (reintentos por defecto)
+  allData.sort((a,b)=>b.repeticiones-a.repeticiones||b.monto-a.monto);
+  setProgress(100,'Listo');
+  setTimeout(()=>document.getElementById('pwrap').style.display='none',600);
+  if(!allData.length){
+    setSt(`Se procesaron ${totalProcesados.toLocaleString()} registros pero ninguno coincide con los filtros actuales. Prueba con "Todos" en Estado.`,'warning');
+    document.getElementById('intro').style.display='block'; return;
+  }
+  setSt(null);
+  mostrarChips(); mostrarMetricas();
+  document.getElementById('tabsbar').style.display='block';
+  document.getElementById('tabla-filtros').style.display='block';
+  // Resetear filtros visuales para nueva carga
+  const fTipo = document.getElementById('f-tipo');
+  const fMetodo = document.getElementById('f-metodo');
+  const fReintentos = document.getElementById('f-reintentos');
+  const fOrden = document.getElementById('f-orden');
+  const fSearch = document.getElementById('f-search-tabla');
+  const fPost = document.getElementById('f-postores');
+  if(fTipo) fTipo.value='todos';
+  if(fReintentos) fReintentos.value='1';
+  if(fOrden) fOrden.value='reintentos';
+  if(fSearch) fSearch.value='';
+  if(fPost) fPost.value='todos';
+  // Inicializar datosFiltrados con todos los datos
+  datosFiltrados = [...allData];
+  actualizarOpcionesMetodo(allData);
+  aplicarFiltrosTabla();
+  renderTipos();
+}
+
+function actualizarOpcionesMetodo(data) {
+  const sel = document.getElementById('f-metodo');
+  const actual = sel.value;
+  const metodos = [...new Set(data.map(r => r.metodo).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    metodos.map(m => `<option value="${m}" ${m===actual?'selected':''}>${m}</option>`).join('');
+}
+
+// ── FILTROS DE TABLA (post-carga) ────────────────────────────
+let datosFiltrados = [];
+
+function aplicarFiltrosTabla(){
+  const tipo      = document.getElementById('f-tipo')?.value || 'todos';
+  const metodo    = document.getElementById('f-metodo')?.value || 'todos';
+  const reintentos= parseInt(document.getElementById('f-reintentos')?.value)||1;
+  const orden     = document.getElementById('f-orden')?.value || 'reintentos';
+
+  const searchTabla = (document.getElementById('f-search-tabla')?.value||'').toLowerCase().trim();
+  const fPost = document.getElementById('f-postores')?.value || 'todos';
+  datosFiltrados = allData.filter(r => {
+    if(tipo !== 'todos' && r.categoria !== tipo) return false;
+    if(metodo !== 'todos' && !r.metodo.toLowerCase().includes(metodo.toLowerCase())) return false;
+    if(r.repeticiones < reintentos) return false;
+    if(searchTabla && !(r.objeto+r.entidad+r.codigo).toLowerCase().includes(searchTabla)) return false;
+    if(fPost === '0' && r.postores !== 0) return false;
+    if(fPost === '1-3' && (r.postores < 1 || r.postores > 3)) return false;
+    if(fPost === '4-10' && (r.postores < 4 || r.postores > 10)) return false;
+    if(fPost === '10+' && r.postores <= 10) return false;
+    return true;
+  });
+
+  // Ordenar
+  if(orden==='monto') datosFiltrados.sort((a,b)=>b.monto-a.monto);
+  else if(orden==='fecha') datosFiltrados.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  else datosFiltrados.sort((a,b)=>b.repeticiones-a.repeticiones||b.monto-a.monto);
+
+  page = 1;
+  const cnt = document.getElementById('filtro-count');
+  if(cnt) cnt.textContent = datosFiltrados.length.toLocaleString()+' resultados';
+  renderTabla();
+  renderTipos(datosFiltrados);
+}
+
+// ── TABLA ─────────────────────────────────────────────────────
+function renderTabla(){
+  const datos = datosFiltrados;
+  const s=(page-1)*PER, items=datos.slice(s,s+PER), tp=Math.ceil(datos.length/PER);
+  if(!items.length){ document.getElementById('twrap').innerHTML='<div style="text-align:center;padding:2rem;color:var(--ink3)">Sin resultados</div>'; return; }
+
+  let h='<table><thead><tr>'
+    +'<th style="width:32px;text-align:center"><input type="checkbox" id="chk-all" onchange="toggleAll(this)" title="Seleccionar todos"></th>'
+    +'<th style="width:90px">Fecha</th>'
+    +'<th>Objeto de contratación</th>'
+    +'<th style="width:80px">Tipo</th>'
+    +'<th style="width:80px">Estado</th>'
+    +'<th style="width:110px">Monto ref.</th>'
+    +'<th style="width:50px;text-align:center">Post.</th>'
+    +'<th style="width:60px;text-align:center" title="Veces que este proceso ha sido relicitado">Reintentos</th>'
+    +'<th style="width:55px"></th>'
+    +'</tr></thead><tbody>';
+
+  items.forEach((r,ri)=>{
+    // Badge tipo
+    let catBadge;
+    if(r.categoria==='services') catBadge='<span class="cat-badge cat-s">🔧 Servicio</span>';
+    else if(r.categoria==='goods') catBadge='<span class="cat-badge cat-g">📦 Bien</span>';
+    else if(r.categoria==='works') catBadge='<span class="cat-badge cat-w">🏗️ Obra</span>';
+    else catBadge=`<span class="cat-badge" style="background:var(--bg3);color:var(--ink2)">${esc(r.categoria)||'—'}</span>`;
+
+    // Badge estado
+    const eBadge=r.estado==='DESIERTO'
+      ?'<span class="badge bd">DESIERTO</span>'
+      :'<span class="badge bc">CANCELADO</span>';
+
+    // Postores
+    const po=r.postores===0
+      ?'<span class="bz" style="font-size:12px">0 ⚠</span>'
+      :`<span style="font-family:monospace;font-size:12px">${r.postores}</span>`;
+
+    // Badge reintentos — sin template literal anidado
+    let rBadge;
+    if(r.repeticiones>=3) rBadge='<span style="font-family:var(--display);font-size:12px;font-weight:800;color:#c84b1f" title="'+r.repeticiones+' convocatorias">'+r.repeticiones+'x 🔁</span>';
+    else if(r.repeticiones===2) rBadge='<span style="font-family:var(--display);font-size:12px;font-weight:800;color:#b8860b" title="2 convocatorias">2x 🔁</span>';
+    else rBadge='<span style="font-size:11px;color:var(--ink3)">1x</span>';
+
+    h+=`<tr>
+      <td style="text-align:center;padding:6px"><input type="checkbox" class="row-chk" data-idx="${s+ri}" style="cursor:pointer"></td>
+      <td style="font-family:monospace;font-size:11px;color:var(--ink2);white-space:nowrap">${r.fecha||'—'}</td>
+      <td>
+        <div class="obj-principal">${esc(r.objeto)||'(Sin descripción)'}</div>
+        <div class="obj-codigo">${esc(r.codigo)}</div>
+        <div class="obj-entidad">${esc(r.entidad)}</div>
+      </td>
+      <td>${catBadge}</td>
+      <td>${eBadge}</td>
+      <td class="cm">${r.monto>0?fmtFull(r.monto):'—'}</td>
+      <td style="text-align:center">${po}</td>
+      <td style="text-align:center">${rBadge}</td>
+      <td><button class="lnk" onclick="window.open('${r.url}','_blank')">↗ SEACE</button></td>
+    </tr>`;
+  });
+  h+='</tbody></table>';
+  document.getElementById('twrap').innerHTML=h;
+  const pag=document.getElementById('pag');
+  pag.style.display='flex';
+  document.getElementById('pinfo').textContent=`Pág. ${page} / ${tp}`;
+  document.getElementById('ptot').textContent=datos.length.toLocaleString()+' resultados';
+  document.getElementById('pprev').disabled=page<=1;
+  document.getElementById('pnext').disabled=page>=tp;
+}
+function cpag(d){page+=d;renderTabla();document.querySelector('.tbox').scrollIntoView({behavior:'smooth',block:'start'})}
+function cambiarPerPage(){PER=parseInt(document.getElementById('f-perpage').value)||20;page=1;renderTabla();}
+
+// ── POR TIPO ──────────────────────────────────────────────────
+function renderTipos(data){
+  const src = (data && data.length) ? data : allData;
+  const g={};
+  src.forEach(r=>{
+    const k=r.metodo||'Sin tipo';
+    if(!g[k]) g[k]={cnt:0,monto:0};
+    g[k].cnt++; g[k].monto+=r.monto;
+  });
+  const s=Object.entries(g).sort((a,b)=>b[1].cnt-a[1].cnt);
+  const mx=s[0]?s[0][1].cnt:1;
+  let h='';
+  s.forEach(([tipo,d])=>{
+    const pct=Math.round(d.cnt/mx*100);
+    h+=`<div class="drow"><div class="dn" title="${tipo}">${tipo}</div><div class="dbw"><div class="dbf" style="width:${pct}%"></div></div><div class="dc">${d.cnt.toLocaleString()}</div><div class="dm">${fmt(d.monto)}</div></div>`;
+  });
+  document.getElementById('tipowrap').innerHTML=h||'<div style="padding:1rem;color:var(--ink3)">Sin datos</div>';
+}
+
+// ── MÉTRICAS ──────────────────────────────────────────────────
+function mostrarMetricas(){
+  document.getElementById('metrics').style.display='grid';
+  const tot=allData.reduce((s,r)=>s+r.monto,0);
+  const des=allData.filter(r=>r.estado==='DESIERTO').length;
+  const cero=allData.filter(r=>r.postores===0).length;
+  document.getElementById('m1').textContent=totalProcesados.toLocaleString();
+  document.getElementById('m2').textContent=des.toLocaleString();
+  document.getElementById('m3').textContent=fmt(tot);
+  document.getElementById('m4').textContent=cero.toLocaleString();
+}
+
+function mostrarChips(){
+  document.getElementById('chips-wrap').style.display='block';
+  document.getElementById('chips').innerHTML=etiquetas.map(e=>`<span class="chip">${e}</span>`).join('');
+}
+
+// ── TOGGLE ALL CHECKBOXES ─────────────────────────────────────
+function toggleAll(chkAll){
+  document.querySelectorAll('.row-chk').forEach(c=>c.checked=chkAll.checked);
+}
+
+// ── EXPORTAR SELECCIONADOS ────────────────────────────────────
+function exportarSeleccionados(){
+  const checked=[...document.querySelectorAll('.row-chk:checked')];
+  if(!checked.length){alert('Selecciona al menos una fila con el checkbox.');return;}
+  const datos=(datosFiltrados.length?datosFiltrados:allData);
+  const seleccionados=checked.map(c=>datos[parseInt(c.dataset.idx)]).filter(Boolean);
+  const cols=['fecha','objeto','codigo','entidad','categoria','metodo','monto','postores','repeticiones','estado','url'];
+  const hdrs=['Fecha','Objeto_Contratacion','Codigo_Proceso','Entidad','Tipo','Tipo_Procedimiento','Monto_S/','Num_Postores','Reintentos','Estado','URL_SEACE'];
+  const NL='\n';
+  let csv=hdrs.join(',')+NL;
+  seleccionados.forEach(r=>{
+    csv+=cols.map(c=>{
+      const v=String(r[c]===null||r[c]===undefined?'':r[c]).replace(/"/g,'""');
+      return(v.includes(',')||v.includes('"')||v.includes(NL))?'"'+v+'"':v;
+    }).join(',')+NL;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='licitaciones_seleccionadas_'+seleccionados.length+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  alert('Exportadas '+seleccionados.length+' filas.');
+}
+
+// ── EXPORT CSV (todos los resultados) ────────────────────────
+function exportCSV(){
+  if(!allData.length){alert('Primero realiza una búsqueda.');return;}
+  const datos=datosFiltrados.length?datosFiltrados:allData;
+  const cols=['ocid','fecha','objeto','codigo','entidad','categoria','metodo','monto','postores','repeticiones','estado','url'];
+  const hdrs=['OCID','Fecha','Objeto_Contratacion','Codigo_Proceso','Entidad','Tipo_Bien_Servicio_Obra','Tipo_Procedimiento','Monto_S/','Num_Postores','Reintentos','Estado','URL_SEACE'];
+  const NL='\n';
+  let csv=hdrs.join(',')+NL;
+  datos.forEach(r=>{
+    csv+=cols.map(c=>{
+      const v=String(r[c]===null||r[c]===undefined?'':r[c]).replace(/"/g,'""');
+      return(v.includes(',')||v.includes('"')||v.includes(NL))?'"'+v+'"':v;
+    }).join(',')+NL;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='licitaciones_desiertas_'+document.getElementById('f-año').value+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ── DESCARGAR ZIP(s) ──────────────────────────────────────────
+async function descargarZIP(){
+  const año=document.getElementById('f-año').value;
+  const mes=document.getElementById('f-mes').value;
+  const meses=mes==='todos'?['01','02','03','04','05','06','07','08','09','10','11','12']:[mes];
+  const hint=document.getElementById('zip-hint');
+  const btn=document.querySelector('.btn-paso.dark');
+
+  if(meses.length===1){
+    const a=document.createElement('a');
+    a.href=`${BASE}/${año}/${meses[0]}`;
+    a.download=`${año}-${meses[0]}_seace_v3.zip`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    hint.textContent='Descargando… cuando termine usa el Paso 2 ↗';
+    return;
+  }
+
+  // Múltiples meses: descarga secuencial via XHR
+  btn.disabled=true;
+  btn.textContent='Descargando…';
+  let ok=0, fail=0;
+
+  for(let i=0;i<meses.length;i++){
+    const m=meses[i];
+    hint.textContent=`Descargando ${nombreMes(m)} ${año}… (${i+1}/${meses.length})`;
+    try{
+      const buf=await xhrGet(`${BASE}/${año}/${m}`, p=>{
+        hint.textContent=`${nombreMes(m)} ${año} — ${Math.round(p)}% (${i+1}/${meses.length})`;
+      });
+      if(!buf){ fail++; continue; }
+      const blob=new Blob([buf],{type:'application/zip'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=`${año}-${m}_seace_v3.zip`;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      ok++;
+      await new Promise(r=>setTimeout(r,600));
+    }catch(e){ fail++; }
+  }
+
+  btn.disabled=false;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar ZIP del OECE';
+  hint.textContent=ok>0?`✓ ${ok} ZIP(s) guardados. Selecciónalos todos en el Paso 2 (Ctrl+clic).`:'El OECE bloqueó las descargas. Intenta mes por mes.';
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function stab(id,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.getElementById('sec-'+id).classList.add('on');btn.classList.add('on')}
+function resetUI(){datosFiltrados=[];['metrics','tabsbar','chips-wrap','tabla-filtros'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('intro').style.display='none';document.getElementById('twrap').innerHTML='';document.getElementById('pag').style.display='none';setSt(null)}
+function setSt(msg,type){const el=document.getElementById('sbox');if(!msg){el.style.display='none';return}el.style.display='flex';el.className='status '+type;const ico=type==='loading'?'<div class="spinner"></div>':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';el.innerHTML=ico+' <span>'+msg+'</span>'}
+function setProgress(pct,label){const w=document.getElementById('pwrap');w.style.display='block';document.getElementById('pfill').style.width=Math.min(pct,100)+'%';document.getElementById('ppct').textContent=Math.round(pct)+'%';document.getElementById('plabel').textContent=label}
+function fmt(v){if(v>=1e6)return'S/ '+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'S/ '+Math.round(v/1e3)+'K';return'S/ '+Math.round(v).toLocaleString()}
+function fmtFull(v){return'S/ '+Math.round(v).toLocaleString('es-PE')}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function nombreMes(m){return['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][parseInt(m)]||m}
+
+document.getElementById('f-search').addEventListener('keydown',e=>{if(e.key==='Enter')buscar()});
+function actualizarHint(){const año=document.getElementById('f-año').value,mes=document.getElementById('f-mes').value,hint=document.getElementById('zip-hint');hint.textContent=mes==='todos'?`${año} completo (12 ZIPs)`:`${BASE}/${año}/${mes}`}
+document.getElementById('f-año').addEventListener('change',actualizarHint);
+document.getElementById('f-mes').addEventListener('change',actualizarHint);
+window.addEventListener('load',actualizarHint);
+</script>
+</body>
+</html>
